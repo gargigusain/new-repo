@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management Portal</title>
+    <script>
+        async function addEmployee(event) {
+            event.preventDefault();
+
+            const data = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value,
+                department: document.getElementById('department').value,
+            };
+
+            const response = await fetch('http://localhost:3000/api/employees', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            alert(result.message || result.error);
+        }
+    </script>
+</head>
+<body>
+    <h1>Add Employee</h1>
+    <form onsubmit="addEmployee(event)">
+        <label>Name: <input type="text" id="name" required></label><br>
+        <label>Email: <input type="email" id="email" required></label><br>
+        <label>Password: <input type="password" id="password" required></label><br>
+        <label>Role:
+            <select id="role" required>
+                <option value="Admin">Admin</option>
+                <option value="HR">HR</option>
+                <option value="Employee">Employee</option>
+            </select>
+        </label><br>
+        <label>Department: <input type="text" id="department" required></label><br>
+        <button type="submit">Add Employee</button>
+    </form>
+</body>
+</html>
+<h2>Employee List</h2>
+<table border="1" id="employeeTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Department</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data will be injected dynamically -->
+    </tbody>
+</table>
+<script>
+    async function fetchEmployees() {
+        const response = await fetch('http://localhost:3000/api/employees');
+        const employees = await response.json();
+        const tableBody = document.querySelector('#employeeTable tbody');
+        tableBody.innerHTML = ''; // Clear existing rows
+        employees.forEach((emp) => {
+            const row = `<tr>
+                <td>${emp.id}</td>
+                <td>${emp.name}</td>
+                <td>${emp.email}</td>
+                <td>${emp.role}</td>
+                <td>${emp.department}</td>
+                <td><button onclick="deleteEmployee(${emp.id})">Delete</button></td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+    fetchEmployees();
+</script>
+
+<script>
+    async function deleteEmployee(id) {
+        const confirmation = confirm(`Are you sure you want to delete employee with ID ${id}?`);
+        if (!confirmation) return;
+
+        const response = await fetch(`http://localhost:3000/api/employees/${id}`, { method: 'DELETE' });
+        const result = await response.json();
+        alert(result.message || result.error);
+        fetchEmployees(); // Refresh the employee list
+    }
+</script>
+
+<h2>Edit Employee</h2>
+<form id="edit-form" onsubmit="updateEmployee(event)">
+    <input type="hidden" id="edit-id">
+    <label>Name: <input type="text" id="edit-name" required></label><br>
+    <label>Email: <input type="email" id="edit-email" required></label><br>
+    <label>Password: <input type="password" id="edit-password" required></label><br>
+    <label>Role:
+        <select id="edit-role" required>
+            <option value="Admin">Admin</option>
+            <option value="HR">HR</option>
+            <option value="Employee">Employee</option>
+        </select>
+    </label><br>
+    <label>Department: <input type="text" id="edit-department" required></label><br>
+    <button type="submit">Update Employee</button>
+</form>
+
+
+<header>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#addForm">Add Employee</a></li>
+            <li><a href="#employeeTable">View Employees</a></li>
+        </ul>
+    </nav>
+</header>
+
+<h2>Employee Records</h2>
+<button onclick="fetchEmployees()">Fetch Employees</button>
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Department</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="employee-table-body">
+        <!-- Employee rows will be dynamically added here -->
+    </tbody>
+</table>
+
+<div>
+    <label for="search">Search Employees:</label>
+    <input type="text" id="search" placeholder="Search by name, email, role, or department" oninput="searchEmployees(event)">
+</div>
+
+<div id="editForm" style="display: none;">
+    <h2>Edit Employee</h2>
+    <form onsubmit="updateEmployee(event)">
+        <input type="hidden" id="editId">
+        <label>Name: <input type="text" id="editName" required></label><br>
+        <label>Email: <input type="email" id="editEmail" required></label><br>
+        <label>Password: <input type="password" id="editPassword"></label><br>
+        <label>Role:
+            <select id="editRole" required>
+                <option value="Admin">Admin</option>
+                <option value="HR">HR</option>
+                <option value="Employee">Employee</option>
+            </select>
+        </label><br>
+        <label>Department: <input type="text" id="editDepartment" required></label><br>
+        <button type="submit">Update Employee</button>
+        <button type="button" onclick="closeEditForm()">Cancel</button>
+    </form>
+</div>
+
+<button id="prevPage">Previous</button>
+<span id="pageInfo"></span>
+<button id="nextPage">Next</button>
+
+<button id="exportCSV">Export to CSV</button>
+
+<button id="deleteSelected">Delete Selected</button>
+
+
+<div id="loader" style="display:none;">Loading...</div>
+
+<link rel="stylesheet" href="style.css">
+<script src="script.js"></script>
+
+<div id="pagination-controls"></div>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Department</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="employee-table-body">
+        <!-- Employee rows will be dynamically inserted here -->
+    </tbody>
+</table>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th><button onclick="sortEmployees('name')">Name</button></th>
+            <th><button onclick="sortEmployees('email')">Email</button></th>
+            <th><button onclick="sortEmployees('role')">Role</button></th>
+            <th><button onclick="sortEmployees('department')">Department</button></th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="employee-table-body">
+        <!-- Employee rows will be dynamically inserted here -->
+    </tbody>
+</table>
+
+<label for="roleFilter">Filter by Role:</label>
+<select id="roleFilter" onchange="applyFilters()">
+    <option value="">All</option>
+    <option value="Admin">Admin</option>
+    <option value="HR">HR</option>
+    <option value="Employee">Employee</option>
+</select>
+
+<label for="departmentFilter">Filter by Department:</label>
+<input type="text" id="departmentFilter" placeholder="Enter Department" oninput="applyFilters()">
+
+<h2>Mark Attendance</h2>
+<form onsubmit="markAttendance(event)">
+    <label for="attendanceStatus">Select Status:</label>
+    <select id="attendanceStatus" required>
+        <option value="Present">Present</option>
+        <option value="Absent">Absent</option>
+        <option value="Leave">Leave</option>
+    </select>
+    <button type="submit">Submit</button>
+</form>
+
+<h2>Attendance History</h2>
+<button onclick="fetchAttendance()">View My Attendance</button>
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody id="attendanceTableBody">
+        <!-- Attendance records will be inserted here -->
+    </tbody>
+</table>
+
+<nav>
+    <a href="admin.html">Admin Attendance Dashboard</a>
+</nav>
+
+

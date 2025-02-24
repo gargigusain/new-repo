@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="admin.style.css"> <!-- Link to external CSS -->
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <!-- Search Bar -->
+        <input type="text" id="search" placeholder="Search employees..." onkeyup="searchEmployees(event)">
+        
+        <!-- Add Employee Button -->
+        <button onclick="document.getElementById('addForm').style.display='block'">Add Employee</button>
+
+        <!-- Employee Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="employee-table-body">
+                <!-- Employee data will be dynamically inserted here -->
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            <button id="prevPage" onclick="changePage(-1)">Previous</button>
+            <span id="pageInfo"></span>
+            <button id="nextPage" onclick="changePage(1)">Next</button>
+        </div>
+    </div>
+
+    <!-- Add Employee Form (Popup) -->
+    <div id="addForm" class="form-popup">
+        <form onsubmit="addEmployee(event)">
+            <h2>Add Employee</h2>
+            <label>Name: <input type="text" id="name" required></label>
+            <label>Email: <input type="email" id="email" required></label>
+            <label>Password: <input type="password" id="password" required></label>
+            <label>Role:
+                <select id="role">
+                    <option value="Admin">Admin</option>
+                    <option value="HR">HR</option>
+                    <option value="Employee">Employee</option>
+                </select>
+            </label>
+            <label>Department: <input type="text" id="department" required></label>
+            <button type="submit">Add Employee</button>
+            <button type="button" onclick="closeForm()">Cancel</button>
+        </form>
+    </div>
+
+    <!-- Edit Employee Form (Popup) -->
+    <div id="editForm" class="form-popup">
+        <form onsubmit="updateEmployee(event)">
+            <h2>Edit Employee</h2>
+            <input type="hidden" id="editId">
+            <label>Name: <input type="text" id="editName" required></label>
+            <label>Email: <input type="email" id="editEmail" required></label>
+            <label>Password: <input type="password" id="editPassword"></label>
+            <label>Role:
+                <select id="editRole">
+                    <option value="Admin">Admin</option>
+                    <option value="HR">HR</option>
+                    <option value="Employee">Employee</option>
+                </select>
+            </label>
+            <label>Department: <input type="text" id="editDepartment" required></label>
+            <button type="submit">Update Employee</button>
+            <button type="button" onclick="closeEditForm()">Cancel</button>
+        </form>
+    </div>
+
+    <input type="text" id="search-bar" placeholder="Search Employee by Name or Email" oninput="searchEmployees()">
+    <p class="loading" id="loading">Loading...</p>
+
+    <button id="logout-btn" onclick="logout()">Logout</button>
+
+    <button id="generate-report-btn" onclick="generateReport()">Download Employee Report</button>
+
+
+    <script src="admin.script.js"></script> <!-- Link to JavaScript -->
+</body>
+</html>
