@@ -1,0 +1,52 @@
+const db = require('../config/db.config'); // Database connection
+
+
+// ✅ Add Employee (Only Admin & HR)
+exports.addEmployee = async (req, res) => {
+    try {
+        const { name, email, password, role, department } = req.body;
+
+        // Check if the email already exists
+        const [existingEmployee] = await db.execute('SELECT * FROM employees WHERE email = ?', [email]);
+        if (existingEmployee.length > 0) {
+            return res.status(400).json({ error: 'Employee already exists' });
+        }
+
+        // Hash password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Insert new employee into the database
+        await db.execute(
+            'INSERT INTO employees (name, email, password, role, department) VALUES (?, ?, ?, ?, ?)',
+            [name, email, hashedPassword, role, department]
+        );
+
+        res.status(201).json({ message: 'Employee added successfully' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error adding employee' });
+    }
+};
+
+// ✅ Delete Employee (Only Admin)
+exports.deleteEmployee = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Check if employee exists
+        const [employee] = await db.execute('SELECT * FROM employees WHERE id = ?', [id]);
+        if (employee.length === 0) {
+            return res.status(404).json({ error: 'Employee not found' });
+        }
+
+        // Delete employee from database
+        await db.execute('DELETE FROM employees WHERE id = ?', [id]);
+
+        res.status(200).json({ message: 'Employee deleted successfully' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error deleting employee' });
+    }
+};
