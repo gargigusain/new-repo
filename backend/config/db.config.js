@@ -15,4 +15,10 @@ db.connect((err) => {
     console.log('Connected to the MySQL database.');
 });
 
-module.exports = db;
+module.exports = {
+    HOST: "localhost",
+    USER: "root",
+    PASSWORD: "binary_operation23",
+    DB: "employee_management"
+  };
+  
