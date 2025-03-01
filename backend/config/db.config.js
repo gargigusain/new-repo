@@ -16,9 +16,9 @@ db.connect((err) => {
 });
 
 module.exports = {
-    HOST: "localhost",
-    USER: "root",
-    PASSWORD: "binary_operation23",
-    DB: "employee_management"
+    HOST: process.env.DB_HOST,
+    USER: process.env.DB_USER,
+    PASSWORD: process.env.DB_PASSWORD,
+    DB: process.env.DB_NAME,
   };
   
