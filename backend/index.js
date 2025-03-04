@@ -11,7 +11,7 @@ app.get('/', (req, res) => {
 });
 
 // Database configuration import
-const db = require('C:\\code\\employee-management-portal\\backend\\config\\dbconfig.js');
+const dbConfig = require('./config/dbconfig.js'); // Ensure this matches the new file name
 
 // Routes for employee management
 const employeeRoutes = require('C:\\code\\employee-management-portal\\backend\\routes\\employee.routes.js');
