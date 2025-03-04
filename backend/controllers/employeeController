@@ -1,4 +1,4 @@
-const db = require('../config/db.config'); // Database connection
+const db = require('../config/dbconfig'); // Database connection
 
 
 // ✅ Add Employee (Only Admin & HR)
