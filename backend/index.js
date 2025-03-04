@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 const dbConfig = require('./config/dbconfig.js'); // Ensure this matches the new file name
 
 // Routes for employee management
-const employeeRoutes = require('C:\\code\\employee-management-portal\\backend\\routes\\employee.routes.js');
+const employeeRoutes = require('./routes/employee.routes.js');
 app.use('/api', employeeRoutes); // Attach the employee routes to the '/api' path
 
 // Set the port for the server
