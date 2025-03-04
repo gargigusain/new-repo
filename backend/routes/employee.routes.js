@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const router = express.Router();
-const db = require('../config/db.config');
+const db = require('../config/dbconfig');
 const { addEmployee, deleteEmployee } = require('../controllers/employeeController');
 const checkRole = require('../middleware/auth');  
 
