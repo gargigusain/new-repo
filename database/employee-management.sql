@@ -15,90 +15,68 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Table structure for table `attendance`
---
-
+-- Drop existing tables if they exist
 DROP TABLE IF EXISTS `attendance`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `attendance` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `employee_id` int NOT NULL,
-  `date` date NOT NULL,
-  `status` enum('Present','Absent') NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `employee_id` (`employee_id`),
-  CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `attendance`
---
-
-LOCK TABLES `attendance` WRITE;
-/*!40000 ALTER TABLE `attendance` DISABLE KEYS */;
-/*!40000 ALTER TABLE `attendance` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `employees`
---
-
-DROP TABLE IF EXISTS `employees`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `employees` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `role` enum('Admin','HR','Employee') NOT NULL,
-  `department` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `employees`
---
-
-LOCK TABLES `employees` WRITE;
-/*!40000 ALTER TABLE `employees` DISABLE KEYS */;
-/*!40000 ALTER TABLE `employees` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `leaves`
---
-
+DROP TABLE IF EXISTS `payroll`;
 DROP TABLE IF EXISTS `leaves`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `leaves` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `employee_id` int NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `status` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
-  PRIMARY KEY (`id`),
-  KEY `employee_id` (`employee_id`),
-  CONSTRAINT `leaves_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`)
+DROP TABLE IF EXISTS `performance_review`;
+DROP TABLE IF EXISTS `employees`;
+
+-- Create Employees Table
+CREATE TABLE `employees` (
+  `employee_id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL,
+  `department` VARCHAR(50) NOT NULL,
+  `email` VARCHAR(100) NOT NULL UNIQUE,
+  `phone_number` VARCHAR(15) NOT NULL,
+  `salary` DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (`employee_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `leaves`
---
+-- Create Attendance Table
+CREATE TABLE `attendance` (
+  `attendance_id` INT NOT NULL AUTO_INCREMENT,
+  `employee_id` INT NOT NULL,
+  `date` DATE NOT NULL,
+  `status` VARCHAR(10) NOT NULL CHECK (`status` IN ('Present', 'Absent')),
+  PRIMARY KEY (`attendance_id`),
+  FOREIGN KEY (`employee_id`) REFERENCES `employees`(`employee_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-LOCK TABLES `leaves` WRITE;
-/*!40000 ALTER TABLE `leaves` DISABLE KEYS */;
-/*!40000 ALTER TABLE `leaves` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Create Payroll Table
+CREATE TABLE `payroll` (
+  `payroll_id` INT NOT NULL AUTO_INCREMENT,
+  `employee_id` INT NOT NULL,
+  `basic_salary` DECIMAL(10,2) NOT NULL,
+  `deductions` DECIMAL(10,2) NOT NULL,
+  `net_salary` DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (`payroll_id`),
+  FOREIGN KEY (`employee_id`) REFERENCES `employees`(`employee_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Create Leave Requests Table
+CREATE TABLE `leaves` (
+  `leave_id` INT NOT NULL AUTO_INCREMENT,
+  `employee_id` INT NOT NULL,
+  `start_date` DATE NOT NULL,
+  `end_date` DATE NOT NULL,
+  `status` VARCHAR(15) NOT NULL CHECK (`status` IN ('Approved', 'Pending', 'Rejected')),
+  PRIMARY KEY (`leave_id`),
+  FOREIGN KEY (`employee_id`) REFERENCES `employees`(`employee_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Create Performance Review Table
+CREATE TABLE `performance_review` (
+  `review_id` INT NOT NULL AUTO_INCREMENT,
+  `employee_id` INT NOT NULL,
+  `review_date` DATE NOT NULL,
+  `score` INT CHECK (`score` BETWEEN 1 AND 10) NOT NULL,
+  `comments` TEXT,
+  PRIMARY KEY (`review_id`),
+  FOREIGN KEY (`employee_id`) REFERENCES `employees`(`employee_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
